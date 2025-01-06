@@ -79,7 +79,7 @@ export default function SystemMonitor() {
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const response = await fetch("http://localhost:6969/metrics");
+        const response = await fetch("http://localhost:6969/metrics/system");
         const data = await response.json();
         const ramUsage = (data.ramUsed / data.ramTotal) * 100;
         setMetrics({ ...data, ramUsage: ramUsage.toFixed(2) });
