@@ -108,6 +108,7 @@ export default function SystemMonitor() {
   }, []);
 
   const formatMemory = (memory) => {
+    memory = parseFloat(memory);
     if (memory > 2048) {
       return (memory / 1024).toFixed(2) + " GB";
     }
@@ -115,6 +116,7 @@ export default function SystemMonitor() {
   };
 
   const formatNet = (net) => {
+    net = parseFloat(net);
     if (net > 1024) {
       return (net / 1024).toFixed(2) + " mB";
     }
