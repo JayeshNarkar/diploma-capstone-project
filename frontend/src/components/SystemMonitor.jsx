@@ -11,7 +11,6 @@ import {
   Legend,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import config from "../config";
 
 ChartJS.register(
   LineElement,
@@ -80,7 +79,7 @@ export default function SystemMonitor() {
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const response = await fetch(config.backendURL + "metrics/system");
+        const response = await fetch("/api/metrics/system");
         const data = await response.json();
         const ramUsage = (data.ramUsed / data.ramTotal) * 100;
         setMetrics({ ...data, ramUsage: ramUsage.toFixed(2) });

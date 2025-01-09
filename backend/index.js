@@ -4,6 +4,7 @@ import os from "os";
 import osu from "node-os-utils";
 import psList from "ps-list";
 import db from "./db.js";
+import alertsDb from "./alertDB.js";
 
 const cpu = osu.cpu;
 const netstat = osu.netstat;
@@ -12,6 +13,12 @@ const app = express();
 const port = 6969;
 
 app.use(cors());
+app.use(express.json());
+
+const processMetricFetcher = async (pid) => {
+  const processes = await psList();
+  return processes.find((proc) => proc.pid === pid);
+};
 
 const systemMetricsFetcher = async () => {
   const cpuUsage = await cpu.usage();
@@ -59,7 +66,7 @@ const processes = await psList();
 app.get("/metrics/:pid", async (req, res) => {
   const pid = parseInt(req.params.pid, 10);
   try {
-    const processInfo = processes.find((proc) => proc.pid === pid);
+    const processInfo = await processMetricFetcher(pid);
     if (processInfo) {
       res.json(processInfo);
     } else {
@@ -78,6 +85,29 @@ app.get("/ps", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Failed to fetch process metrics" });
+  }
+});
+
+app.post("/alerts", (req, res) => {
+  try {
+    const alert = alertSchema.parse(req.body);
+
+    const stmt = alertsDb.prepare(`
+      INSERT INTO alerts (timestamp, severity_level, message, effected_pids)
+      VALUES (?, ?, ?, ?)
+    `);
+
+    stmt.run(
+      alert.timestamp,
+      alert.severity_level,
+      alert.message,
+      JSON.stringify(alert.effected_pids)
+    );
+
+    res.status(201).json({ message: "Alert stored successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error: "Invalid alert data" });
   }
 });
 
