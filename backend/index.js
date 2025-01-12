@@ -5,6 +5,7 @@ import osu from "node-os-utils";
 import psList from "ps-list";
 import db from "./db.js";
 import alertsDb from "./alertDB.js";
+import alertSchema from "./schema.js";
 
 const cpu = osu.cpu;
 const netstat = osu.netstat;
@@ -88,26 +89,55 @@ app.get("/ps", async (req, res) => {
   }
 });
 
+const storeAlert = (alert) => {
+  const stmt = alertsDb.prepare(`
+    INSERT INTO alerts (timestamp, severity_level, message, effected_pids)
+    VALUES (?, ?, ?, ?)
+  `);
+
+  stmt.run(
+    alert.timestamp,
+    alert.severity_level,
+    alert.message,
+    JSON.stringify(alert.effected_pids)
+  );
+};
+
 app.post("/alerts", (req, res) => {
   try {
     const alert = alertSchema.parse(req.body);
 
-    const stmt = alertsDb.prepare(`
-      INSERT INTO alerts (timestamp, severity_level, message, effected_pids)
-      VALUES (?, ?, ?, ?)
-    `);
+    storeAlert(alert);
 
-    stmt.run(
-      alert.timestamp,
-      alert.severity_level,
-      alert.message,
-      JSON.stringify(alert.effected_pids)
-    );
-
-    res.status(201).json({ message: "Alert stored successfully" });
+    res.status(201).json({ message: "Alert received and stored successfully" });
   } catch (error) {
     console.error(error);
     res.status(400).json({ error: "Invalid alert data" });
+  }
+});
+
+app.get("/alerts", (req, res) => {
+  try {
+    const alerts = alertsDb.prepare("SELECT * FROM alerts").all();
+    res.json(alerts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch alerts" });
+  }
+});
+
+app.get("/alerts/:id", (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  try {
+    const alert = alertsDb.prepare("SELECT * FROM alerts WHERE id = ?").get(id);
+    if (alert) {
+      res.json(alert);
+    } else {
+      res.status(404).json({ error: "Alert not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch alert" });
   }
 });
 
