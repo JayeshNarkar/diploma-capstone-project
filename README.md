@@ -59,3 +59,20 @@ npm run dev
 - **GET** /metrics/:pid: Fetches metrics for a specific process by PID.
 
 - **GET** /ps: Lists all running processes.
+
+-**POST** /alerts: Receives and stores an alert.
+
+request type:
+
+```
+{
+  "timestamp": ISO 8601 format,
+  "severity_level": int (1-5),
+  "message": String,
+  "effected_pids": Array of Integer      #[1234, 5678]
+}
+```
+
+-**GET** /alerts: Retrieves all alerts.
+
+-**GET** /alerts/:id: Retrieves a single alert by its ID.

@@ -37,7 +37,8 @@ export default function SystemMonitor() {
         label: "CPU Usage (%)",
         data: [],
         borderColor: "rgba(75,192,192,1)",
-        fill: false,
+        backgroundColor: "rgba(75,192,192,0.2)",
+        fill: true,
         tension: 0.4,
       },
     ],
@@ -145,13 +146,13 @@ export default function SystemMonitor() {
   );
 
   const renderNetworkUsage = () => (
-    <div className="col-span-1 row-span-2 flex flex-col items-center justify-center rounded-md bg-gray-200 p-4 m-2">
-      <div className="w-full flex items-center justify-center bg-green-200 rounded-md mb-2 flex-grow">
+    <div className="col-span-1 row-span-2 flex flex-col items-center justify-center rounded-lg bg-gray-200 p-4 shadow-md">
+      <div className="w-full flex items-center justify-center bg-green-200 rounded-lg mb-2 flex-grow shadow-sm">
         <div className="m-2 text-green-800">
           {formatNet(metrics.bandwidthDownKb)}/s
         </div>
       </div>
-      <div className="w-full flex items-center justify-center bg-yellow-200 rounded-md flex-grow">
+      <div className="w-full flex items-center justify-center bg-yellow-200 rounded-lg flex-grow shadow-sm">
         <div className="m-2 text-yellow-800">
           {formatNet(metrics.bandwidthUpKb)}/s
         </div>
@@ -172,13 +173,13 @@ export default function SystemMonitor() {
   };
 
   return (
-    <div className="p-5 font-sans bg-gray-600 max-h-screen grid grid-cols-4 grid-rows-4 gap-4">
+    <div className="p-5 font-sans bg-gray-400 max-h-screen grid grid-cols-4 grid-rows-4 gap-4">
       <div className="col-span-3 row-span-2">{renderCpuUsage()}</div>
       {renderNetworkUsage()}
       <div className="col-span-1 row-span-2 flex items-center justify-center">
         {renderMemoryUsage()}
       </div>
-      <div className="col-span-3 row-span-2 flex items-center justify-center rounded-md bg-gray-200">
+      <div className="col-span-3 row-span-2 flex items-center justify-center rounded-lg bg-gray-200 shadow-md">
         <p className="text-black text-center">Fourth Component</p>
       </div>
     </div>

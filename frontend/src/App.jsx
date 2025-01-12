@@ -1,10 +1,18 @@
 import "./App.css";
-import SystemMonitor from "./components/SystemMonitor";
+import { Routes, Route } from "react-router";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
     <>
-      <SystemMonitor />
+      <Routes>
+        {/* <Route path="/" element={} />
+        <Route element={<AuthLayout />}>
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+        </Route> */}
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
     </>
   );
 }
