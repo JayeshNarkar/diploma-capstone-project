@@ -42,7 +42,7 @@ node index.js
 2. **Install dependencies**:
 
 ```
-cd backend
+cd frontend
 npm i
 ```
 
