@@ -60,7 +60,7 @@ npm run dev
 
 - **GET** /ps: Lists all running processes.
 
--**POST** /alerts: Receives and stores an alert.
+- **POST** /alerts: Receives and stores an alert.
 
 request type:
 
@@ -73,6 +73,6 @@ request type:
 }
 ```
 
--**GET** /alerts: Retrieves all alerts.
+- **GET** /alerts: Retrieves all alerts.
 
--**GET** /alerts/:id: Retrieves a single alert by its ID.
+- **GET** /alerts/:id: Retrieves a single alert by its ID.
