@@ -30,6 +30,10 @@ export default function SystemMonitor() {
     ramUsage: 0,
   });
 
+  const [diskMetrics, setDiskMetrics] = useState({
+    diskTotal: 0,
+  });
+
   const [cpuData, setCpuData] = useState({
     labels: [],
     datasets: [
@@ -43,6 +47,76 @@ export default function SystemMonitor() {
       },
     ],
   });
+
+  const [diskData, setDiskData] = useState({
+    labels: [],
+    datasets: [
+      {
+        data: [],
+        backgroundColor: [],
+        hoverBackgroundColor: [],
+      },
+    ],
+  });
+  useEffect(() => {
+    const fetchMetrics = async () => {
+      try {
+        const response = await fetch("/api/metrics/system");
+        const data = await response.json();
+        const ramUsage = (data.ramUsed / data.ramTotal) * 100;
+        setMetrics({ ...data, ramUsage: ramUsage.toFixed(2) });
+
+        setCpuData((prevData) => ({
+          labels: [...prevData.labels, new Date().toLocaleTimeString()].slice(
+            -10
+          ),
+          datasets: [
+            {
+              ...prevData.datasets[0],
+              data: [...prevData.datasets[0].data, data.cpuUsage].slice(-10),
+            },
+          ],
+        }));
+      } catch (error) {
+        console.error("Error fetching system metrics:", error);
+      }
+    };
+
+    const fetchDiskMetrics = async () => {
+      try {
+        const response = await fetch("/api/metrics/systemDisk");
+        const data = await response.json();
+        const totalDisk = data.find((disk) => disk.totalAllDisks);
+
+        setDiskMetrics({
+          diskTotal:
+            totalDisk.totalAllDisks.used + totalDisk.totalAllDisks.available,
+          diskUsed: totalDisk.totalAllDisks.used,
+          diskAvailable: totalDisk.totalAllDisks.available,
+        });
+
+        setDiskData({
+          labels: ["Used", "Available"],
+          datasets: [
+            {
+              data: [
+                (totalDisk.totalAllDisks.used / 1024).toFixed(2),
+                (totalDisk.totalAllDisks.available / 1024).toFixed(2),
+              ],
+              backgroundColor: ["#FF6384", "#36A2EB"],
+              hoverBackgroundColor: ["#FF6384", "#36A2EB"],
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error fetching disk metrics:", error);
+      }
+    };
+
+    fetchMetrics();
+    fetchDiskMetrics();
+  }, []);
+
   const cpuOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -123,9 +197,22 @@ export default function SystemMonitor() {
     return net + " kB";
   };
 
+  const formatDisk = (disk) => {
+    disk = disk / 1024;
+    if (disk > 1024 * 1024) {
+      return (disk / 1024 / 1024).toFixed(2) + " TB";
+    }
+    if (disk > 1024) {
+      return (disk / 1024).toFixed(2) + " GB";
+    }
+    return disk.toFixed(2) + " MB";
+  };
+
   const renderCpuUsage = () => (
-    <div className="bg-gray-200 shadow-md rounded-lg w-full h-full flex flex-col items-center p-4">
-      <h2 className="text-xl font-semibold text-center">CPU Usage</h2>
+    <div className="bg-gray-800 shadow-md rounded-2xl w-full h-full flex flex-col items-center p-4">
+      <h2 className="text-xl font-semibold text-center text-white">
+        CPU Usage
+      </h2>
       <div className="w-full h-64">
         <Line data={cpuData} options={cpuOptions} />
       </div>
@@ -133,12 +220,14 @@ export default function SystemMonitor() {
   );
 
   const renderMemoryUsage = () => (
-    <div className="bg-gray-200 shadow-md rounded-lg w-full h-full flex flex-col items-center p-4">
-      <h2 className="text-xl font-semibold text-center">Memory Usage</h2>
+    <div className="bg-gray-800 shadow-md rounded-2xl w-full h-full flex flex-col items-center p-4">
+      <h2 className="text-xl font-semibold text-center text-white">
+        Memory Usage
+      </h2>
       <div className="w-full h-64">
         <Pie data={memoryData} options={memoryOptions} />
       </div>
-      <p className="text-center mt-2">
+      <p className="text-center mt-2 text-white">
         <strong>Used:</strong> {formatMemory(metrics.ramUsed)} /{" "}
         <strong>Total:</strong> {formatMemory(metrics.ramTotal)}
       </p>
@@ -146,18 +235,21 @@ export default function SystemMonitor() {
   );
 
   const renderNetworkUsage = () => (
-    <div className="col-span-1 row-span-2 flex flex-col items-center justify-center rounded-lg bg-gray-200 p-4 shadow-md">
-      <div className="w-full flex items-center justify-center bg-green-200 rounded-lg mb-2 flex-grow shadow-sm">
+    <>
+      <h2 className="text-xl font-semibold text-center text-white mb-2">
+        Network Usage
+      </h2>
+      <div className="w-full flex items-center justify-center bg-gradient-to-r from-blue-400 to-green-400 rounded-2xl mb-2 flex-grow shadow-sm">
         <div className="m-2 text-green-800">
           {formatNet(metrics.bandwidthDownKb)}/s
         </div>
       </div>
-      <div className="w-full flex items-center justify-center bg-yellow-200 rounded-lg flex-grow shadow-sm">
+      <div className="w-full flex items-center justify-center bg-gradient-to-r from-yellow-400 to-red-400 rounded-2xl flex-grow shadow-sm">
         <div className="m-2 text-yellow-800">
           {formatNet(metrics.bandwidthUpKb)}/s
         </div>
       </div>
-    </div>
+    </>
   );
 
   const memoryData = {
@@ -172,15 +264,49 @@ export default function SystemMonitor() {
     ],
   };
 
+  const diskOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      datalabels: {
+        display: true,
+        align: "top",
+        color: "gray",
+        formatter: (value) =>
+          `${((value / (diskMetrics.diskTotal / 1024)) * 100).toFixed(2)}%`,
+      },
+    },
+  };
+
+  const renderDiskUsage = () => (
+    <div className="bg-gray-800 shadow-md rounded-2xl w-full h-full flex flex-col items-center p-4">
+      <h2 className="text-xl font-semibold text-center text-white">
+        Disk Usage
+      </h2>
+      <div className="w-full h-64">
+        <Pie data={diskData} options={diskOptions} />
+      </div>
+      <p className="text-center mt-2 text-white">
+        <strong>Used:</strong> {formatDisk(diskMetrics.diskUsed)} /{" "}
+        <strong>Total:</strong> {formatDisk(diskMetrics.diskTotal)}
+      </p>
+    </div>
+  );
+
   return (
-    <div className="p-5 font-sans bg-gray-400 max-h-screen grid grid-cols-4 grid-rows-4 gap-4">
+    <div className="p-5 font-sans bg-gray-900 max-h-screen grid grid-cols-4 grid-rows-4 gap-4">
       <div className="col-span-3 row-span-2">{renderCpuUsage()}</div>
-      {renderNetworkUsage()}
+      <div className="col-span-1 row-span-2 flex flex-col items-center justify-center rounded-2xl bg-gray-800 p-4 shadow-md">
+        {renderNetworkUsage()}
+      </div>
       <div className="col-span-1 row-span-2 flex items-center justify-center">
         {renderMemoryUsage()}
       </div>
-      <div className="col-span-3 row-span-2 flex items-center justify-center rounded-lg bg-gray-200 shadow-md">
-        <p className="text-black text-center">Fourth Component</p>
+      <div className="col-span-1 row-span-2 flex items-center justify-center rounded-2xl bg-gray-800 shadow-md">
+        {renderDiskUsage()}
+      </div>
+      <div className="col-span-2 row-span-2 flex items-center justify-center rounded-2xl bg-gray-800 shadow-md">
+        <p className="text-white text-center">Fifth Component</p>
       </div>
     </div>
   );

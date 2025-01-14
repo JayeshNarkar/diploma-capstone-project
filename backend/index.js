@@ -7,6 +7,8 @@ import db from "./db.js";
 import alertsDb from "./alertDB.js";
 import alertSchema from "./schema.js";
 
+import nodeDiskInfo from "node-disk-info";
+
 const cpu = osu.cpu;
 const netstat = osu.netstat;
 
@@ -19,6 +21,36 @@ app.use(express.json());
 const processMetricFetcher = async (pid) => {
   const processes = await psList();
   return processes.find((proc) => proc.pid === pid);
+};
+
+const systemDiskUsageFetcher = async () => {
+  const disks = await nodeDiskInfo.getDiskInfo();
+
+  const totalAllDisks = disks.reduce(
+    (acc, disk) => {
+      acc.blocks += disk.blocks;
+      acc.used += disk.used;
+      acc.available += disk.available;
+      return acc;
+    },
+    { blocks: 0, used: 0, available: 0 }
+  );
+
+  const diskArray = disks
+    .sort((a, b) => b.used - a.used)
+    .slice(0, 5)
+    .map((disk) => ({
+      filesystem: disk.filesystem,
+      blocks: disk.blocks,
+      used: disk.used,
+      available: disk.available,
+      capacity: disk.capacity,
+      mounted: disk.mounted,
+    }));
+
+  diskArray.push({ totalAllDisks });
+
+  return diskArray;
 };
 
 const systemMetricsFetcher = async () => {
@@ -60,6 +92,10 @@ setInterval(systemMetricsStore, 2000);
 
 app.get("/metrics/system", async (req, res) => {
   res.json(await systemMetricsFetcher());
+});
+
+app.get("/metrics/systemDisk", async (req, res) => {
+  res.json(await systemDiskUsageFetcher());
 });
 
 const processes = await psList();
