@@ -140,9 +140,10 @@ export default function SystemMonitor() {
   const memoryOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    cutout: "50%",
     plugins: {
       datalabels: {
-        display: true,
+        display: false,
         align: "top",
         color: "gray",
         formatter: (value) =>
@@ -239,7 +240,7 @@ export default function SystemMonitor() {
       <h2 className="text-xl font-semibold text-center text-white mb-2">
         Network Usage
       </h2>
-      <div className="w-full flex items-center justify-center bg-gradient-to-r from-blue-400 to-green-400 rounded-2xl mb-2 flex-grow shadow-sm">
+      <div className="w-full flex items-center justify-center bg-gradient-to-r from-blue-600 to-green-400 rounded-2xl mb-2 flex-grow shadow-sm">
         <div className="m-2 text-green-800">
           {formatNet(metrics.bandwidthDownKb)}/s
         </div>
@@ -259,7 +260,6 @@ export default function SystemMonitor() {
         data: [metrics.ramUsed, metrics.ramTotal - metrics.ramUsed],
         backgroundColor: ["#FFCE56", "#4BC0C0"],
         hoverBackgroundColor: ["#FFCE56", "#4BC0C0"],
-        borderWidth: 1,
       },
     ],
   };
@@ -267,9 +267,10 @@ export default function SystemMonitor() {
   const diskOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    cutout: "50%",
     plugins: {
       datalabels: {
-        display: true,
+        display: false,
         align: "top",
         color: "gray",
         formatter: (value) =>
