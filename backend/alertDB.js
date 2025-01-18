@@ -4,7 +4,7 @@ const alertsDb = new Database("alerts.db", { verbose: console.log });
 alertsDb.exec(`
   CREATE TABLE IF NOT EXISTS alerts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     severity_level INTEGER,
     message TEXT,
     effected_pids TEXT

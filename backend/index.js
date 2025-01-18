@@ -3,7 +3,7 @@ import cors from "cors";
 import os from "os";
 import osu from "node-os-utils";
 import psList from "ps-list";
-import db from "./db.js";
+import metricsDb from "./metricsDB.js";
 import alertsDb from "./alertDB.js";
 import alertSchema from "./schema.js";
 
@@ -74,7 +74,7 @@ const systemMetricsFetcher = async () => {
 
 const systemMetricsStore = async () => {
   const metrics = await systemMetricsFetcher();
-  const stmt = db.prepare(`
+  const stmt = metricsDb.prepare(`
     INSERT INTO systemMetrics (cpuUsage, ramTotal, ramUsed, bandwidthDownKb, bandwidthUpKb)
     VALUES (?, ?, ?, ?, ?)
   `);
@@ -97,8 +97,6 @@ app.get("/metrics/system", async (req, res) => {
 app.get("/metrics/systemDisk", async (req, res) => {
   res.json(await systemDiskUsageFetcher());
 });
-
-const processes = await psList();
 
 app.get("/metrics/:pid", async (req, res) => {
   const pid = parseInt(req.params.pid, 10);
@@ -127,12 +125,11 @@ app.get("/ps", async (req, res) => {
 
 const storeAlert = (alert) => {
   const stmt = alertsDb.prepare(`
-    INSERT INTO alerts (timestamp, severity_level, message, effected_pids)
-    VALUES (?, ?, ?, ?)
+    INSERT INTO alerts (severity_level, message, effected_pids)
+    VALUES (?, ?, ?)
   `);
 
   stmt.run(
-    alert.timestamp,
     alert.severity_level,
     alert.message,
     JSON.stringify(alert.effected_pids)
@@ -147,8 +144,10 @@ app.post("/alerts", (req, res) => {
 
     res.status(201).json({ message: "Alert received and stored successfully" });
   } catch (error) {
-    console.error(error);
-    res.status(400).json({ error: "Invalid alert data" });
+    console.log(error);
+    res
+      .status(400)
+      .json({ error: "Invalid alert data", msg: error.issues[0].message });
   }
 });
 

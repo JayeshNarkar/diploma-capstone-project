@@ -66,7 +66,6 @@ request type:
 
 ```
 {
-  "timestamp": ISO 8601 format,
   "severity_level": int (1-5),
   "message": String,
   "effected_pids": Array of Integer      #[1234, 5678]

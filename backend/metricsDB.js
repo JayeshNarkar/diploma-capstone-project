@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
-const db = new Database("metrics.db", { verbose: console.log });
+const metricsDB = new Database("metrics.db", { verbose: console.log });
 
-db.exec(`
+metricsDB.exec(`
   CREATE TABLE IF NOT EXISTS systemMetrics (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -13,4 +13,4 @@ db.exec(`
   )
 `);
 
-export default db;
+export default metricsDB;
