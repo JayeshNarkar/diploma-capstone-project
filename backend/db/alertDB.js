@@ -7,7 +7,8 @@ alertsDb.exec(`
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     severity_level INTEGER,
     message TEXT,
-    effected_pids TEXT
+    effected_pids TEXT,
+    acknowledged BOOLEAN DEFAULT 0
   )
 `);
 

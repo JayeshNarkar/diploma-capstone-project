@@ -54,17 +54,25 @@ export default function SystemMonitor() {
       {
         data: [],
         backgroundColor: [],
+        hoverOffset: 25,
         hoverBackgroundColor: [],
       },
     ],
   });
+
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const response = await fetch("/api/metrics/system");
-        const data = await response.json();
-        const ramUsage = (data.ramUsed / data.ramTotal) * 100;
-        setMetrics({ ...data, ramUsage: ramUsage.toFixed(2) });
+        const [systemResponse, diskResponse] = await Promise.all([
+          fetch("/api/metrics/system"),
+          fetch("/api/metrics/systemDisk"),
+        ]);
+
+        const systemData = await systemResponse.json();
+        const diskData = await diskResponse.json();
+
+        const ramUsage = (systemData.ramUsed / systemData.ramTotal) * 100;
+        setMetrics({ ...systemData, ramUsage: ramUsage.toFixed(2) });
 
         setCpuData((prevData) => ({
           labels: [...prevData.labels, new Date().toLocaleTimeString()].slice(
@@ -73,20 +81,14 @@ export default function SystemMonitor() {
           datasets: [
             {
               ...prevData.datasets[0],
-              data: [...prevData.datasets[0].data, data.cpuUsage].slice(-10),
+              data: [...prevData.datasets[0].data, systemData.cpuUsage].slice(
+                -10
+              ),
             },
           ],
         }));
-      } catch (error) {
-        console.error("Error fetching system metrics:", error);
-      }
-    };
 
-    const fetchDiskMetrics = async () => {
-      try {
-        const response = await fetch("/api/metrics/systemDisk");
-        const data = await response.json();
-        const totalDisk = data.find((disk) => disk.totalAllDisks);
+        const totalDisk = diskData.find((disk) => disk.totalAllDisks);
 
         setDiskMetrics({
           diskTotal:
@@ -109,12 +111,13 @@ export default function SystemMonitor() {
           ],
         });
       } catch (error) {
-        console.error("Error fetching disk metrics:", error);
+        console.error("Error fetching metrics:", error);
       }
     };
 
     fetchMetrics();
-    fetchDiskMetrics();
+    const interval = setInterval(fetchMetrics, 2000);
+    return () => clearInterval(interval);
   }, []);
 
   const cpuOptions = {
@@ -151,36 +154,6 @@ export default function SystemMonitor() {
       },
     },
   };
-
-  useEffect(() => {
-    const fetchMetrics = async () => {
-      try {
-        const response = await fetch("/api/metrics/system");
-        const data = await response.json();
-        const ramUsage = (data.ramUsed / data.ramTotal) * 100;
-        setMetrics({ ...data, ramUsage: ramUsage.toFixed(2) });
-
-        setCpuData((prevData) => ({
-          labels: [...prevData.labels, new Date().toLocaleTimeString()].slice(
-            -10
-          ),
-          datasets: [
-            {
-              ...prevData.datasets[0],
-              data: [...prevData.datasets[0].data, data.cpuUsage].slice(-10),
-            },
-          ],
-        }));
-      } catch (error) {
-        console.error("Error fetching metrics:", error);
-      }
-    };
-
-    fetchMetrics();
-    const interval = setInterval(fetchMetrics, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const formatMemory = (memory) => {
     memory = parseFloat(memory);
@@ -260,6 +233,7 @@ export default function SystemMonitor() {
         data: [metrics.ramUsed, metrics.ramTotal - metrics.ramUsed],
         backgroundColor: ["#FFCE56", "#4BC0C0"],
         hoverBackgroundColor: ["#FFCE56", "#4BC0C0"],
+        hoverOffset: 25,
       },
     ],
   };

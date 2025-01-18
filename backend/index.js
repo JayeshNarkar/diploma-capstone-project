@@ -3,8 +3,8 @@ import cors from "cors";
 import os from "os";
 import osu from "node-os-utils";
 import psList from "ps-list";
-import metricsDb from "./metricsDB.js";
-import alertsDb from "./alertDB.js";
+import metricsDb from "./db/metricsDB.js";
+import alertsDb from "./db/alertDB.js";
 import alertSchema from "./schema.js";
 
 import nodeDiskInfo from "node-disk-info";
