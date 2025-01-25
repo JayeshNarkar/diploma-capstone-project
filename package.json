@@ -1,0 +1,28 @@
+{
+  "name": "diploma-capstone-project",
+  "version": "1.0.0",
+  "description": "an anamoly detection system",
+  "homepage": "https://github.com/JayeshNarkar/diploma-capstone-project#readme",
+  "bugs": {
+    "url": "https://github.com/JayeshNarkar/diploma-capstone-project/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JayeshNarkar/diploma-capstone-project.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd backend && node index.js",
+    "start:frontend": "cd frontend && npm run dev -- --host",
+    "install": "concurrently \"npm run install:backend\" \"npm run install:frontend\"",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install"
+  },
+  "dependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

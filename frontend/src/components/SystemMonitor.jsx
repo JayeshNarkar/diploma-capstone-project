@@ -231,8 +231,45 @@ export default function SystemMonitor() {
     datasets: [
       {
         data: [metrics.ramUsed, metrics.ramTotal - metrics.ramUsed],
-        backgroundColor: ["#FFCE56", "#4BC0C0"],
-        hoverBackgroundColor: ["#FFCE56", "#4BC0C0"],
+        backgroundColor: (context) => {
+          const chart = context.chart;
+          const { ctx, chartArea } = chart;
+
+          if (!chartArea) {
+            return null;
+          }
+
+          const usedMemoryGradient = ctx.createRadialGradient(
+            (chartArea.left + chartArea.right) / 2,
+            (chartArea.top + chartArea.bottom) / 2,
+            0,
+            (chartArea.left + chartArea.right) / 2,
+            (chartArea.top + chartArea.bottom) / 2,
+            Math.max(
+              chartArea.right - chartArea.left,
+              chartArea.bottom - chartArea.top
+            ) / 2
+          );
+          usedMemoryGradient.addColorStop(0, "#FF9D09");
+          usedMemoryGradient.addColorStop(1, "#FFDE89");
+
+          const freeMemoryGradient = ctx.createRadialGradient(
+            (chartArea.left + chartArea.right) / 2,
+            (chartArea.top + chartArea.bottom) / 2,
+            0,
+            (chartArea.left + chartArea.right) / 2,
+            (chartArea.top + chartArea.bottom) / 2,
+            Math.max(
+              chartArea.right - chartArea.left,
+              chartArea.bottom - chartArea.top
+            ) / 2
+          );
+          freeMemoryGradient.addColorStop(0, "#9DDDF4");
+          freeMemoryGradient.addColorStop(1, "#60EFFF");
+
+          return [usedMemoryGradient, freeMemoryGradient];
+        },
+        hoverBackgroundColor: ["#FFDE89", "#60EFFF"],
         hoverOffset: 25,
       },
     ],
