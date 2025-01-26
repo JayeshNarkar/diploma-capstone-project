@@ -11,6 +11,10 @@ import {
   Legend,
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
+import axios from "axios";
+import checkCircleIcon from "../assets/check-circle.svg";
+import exclamationCircleIcon from "../assets/exclamation-circle.svg";
+import trashIcon from "../assets/trash.svg";
 
 ChartJS.register(
   LineElement,
@@ -91,8 +95,7 @@ export default function SystemMonitor() {
         const totalDisk = diskData.find((disk) => disk.totalAllDisks);
 
         setDiskMetrics({
-          diskTotal:
-            totalDisk.totalAllDisks.used + totalDisk.totalAllDisks.available,
+          diskTotal: totalDisk.totalAllDisks.blocks,
           diskUsed: totalDisk.totalAllDisks.used,
           diskAvailable: totalDisk.totalAllDisks.available,
         });
@@ -105,8 +108,47 @@ export default function SystemMonitor() {
                 (totalDisk.totalAllDisks.used / 1024).toFixed(2),
                 (totalDisk.totalAllDisks.available / 1024).toFixed(2),
               ],
-              backgroundColor: ["#FF6384", "#36A2EB"],
-              hoverBackgroundColor: ["#FF6384", "#36A2EB"],
+              backgroundColor: (context) => {
+                const chart = context.chart;
+                const { ctx, chartArea } = chart;
+
+                if (!chartArea) {
+                  return null;
+                }
+
+                const usedDiskGradient = ctx.createRadialGradient(
+                  (chartArea.left + chartArea.right) / 2,
+                  (chartArea.top + chartArea.bottom) / 2,
+                  0,
+                  (chartArea.left + chartArea.right) / 2,
+                  (chartArea.top + chartArea.bottom) / 2,
+                  Math.max(
+                    chartArea.right - chartArea.left,
+                    chartArea.bottom - chartArea.top
+                  ) / 2
+                );
+
+                usedDiskGradient.addColorStop(0, "#FF4500");
+                usedDiskGradient.addColorStop(1, "#FFD700");
+
+                const availableDiskGradient = ctx.createRadialGradient(
+                  (chartArea.left + chartArea.right) / 2,
+                  (chartArea.top + chartArea.bottom) / 2,
+                  0,
+                  (chartArea.left + chartArea.right) / 2,
+                  (chartArea.top + chartArea.bottom) / 2,
+                  Math.max(
+                    chartArea.right - chartArea.left,
+                    chartArea.bottom - chartArea.top
+                  ) / 2
+                );
+                availableDiskGradient.addColorStop(0, "#00BFFF");
+                availableDiskGradient.addColorStop(1, "#1E90FF");
+
+                return [usedDiskGradient, availableDiskGradient];
+              },
+              hoverBackgroundColor: ["#FFDE89", "#60EFFF"],
+              hoverOffset: 25,
             },
           ],
         });
@@ -250,8 +292,8 @@ export default function SystemMonitor() {
               chartArea.bottom - chartArea.top
             ) / 2
           );
-          usedMemoryGradient.addColorStop(0, "#FF9D09");
-          usedMemoryGradient.addColorStop(1, "#FFDE89");
+          usedMemoryGradient.addColorStop(0, "#FF4500");
+          usedMemoryGradient.addColorStop(1, "#FFD700");
 
           const freeMemoryGradient = ctx.createRadialGradient(
             (chartArea.left + chartArea.right) / 2,
@@ -264,8 +306,8 @@ export default function SystemMonitor() {
               chartArea.bottom - chartArea.top
             ) / 2
           );
-          freeMemoryGradient.addColorStop(0, "#9DDDF4");
-          freeMemoryGradient.addColorStop(1, "#60EFFF");
+          freeMemoryGradient.addColorStop(0, "#00BFFF");
+          freeMemoryGradient.addColorStop(1, "#1E90FF");
 
           return [usedMemoryGradient, freeMemoryGradient];
         },
@@ -304,6 +346,60 @@ export default function SystemMonitor() {
       </p>
     </div>
   );
+  const [alerts, setAlerts] = useState([]);
+
+  useEffect(() => {
+    async function fetchAlerts() {
+      try {
+        const response = await axios.get("/api/alerts");
+        setAlerts(response.data);
+      } catch (error) {
+        console.error("Error fetching alerts:", error);
+      }
+    }
+
+    fetchAlerts();
+    const interval = setInterval(fetchAlerts, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleAcknowledge = async (id) => {
+    try {
+      await axios.post(`/api/alerts/${id}/acknowledge`);
+      setAlerts(
+        alerts.map((alert) =>
+          alert.id === id ? { ...alert, acknowledged: 1 } : alert
+        )
+      );
+    } catch (error) {
+      console.error("Error acknowledging alert:", error);
+    }
+  };
+
+  const handleRemove = async (id) => {
+    try {
+      await axios.post(`/api/alerts/${id}/remove`);
+      setAlerts(alerts.filter((alert) => alert.id !== id));
+    } catch (error) {
+      console.error("Error removing alert:", error);
+    }
+  };
+
+  const severityLabels = {
+    1: "Critical",
+    2: "High",
+    3: "Moderate",
+    4: "Low",
+    5: "Informational",
+  };
+
+  const severityDescriptions = {
+    1: "Critical (Immediate Action Required)",
+    2: "High (Action Needed Soon)",
+    3: "Moderate (Investigation Recommended)",
+    4: "Low (Observation Only)",
+    5: "Informational (No Action Needed)",
+  };
 
   return (
     <div className="p-5 font-sans bg-gray-900 max-h-screen grid grid-cols-4 grid-rows-4 gap-4">
@@ -317,8 +413,92 @@ export default function SystemMonitor() {
       <div className="col-span-1 row-span-2 flex items-center justify-center rounded-2xl bg-gray-800 shadow-md">
         {renderDiskUsage()}
       </div>
-      <div className="col-span-2 row-span-2 flex items-center justify-center rounded-2xl bg-gray-800 shadow-md">
-        <p className="text-white text-center">Fifth Component</p>
+      <div className="col-span-2 row-span-2 flex flex-col rounded-2xl bg-gray-800 shadow-md p-4">
+        <h2 className="text-xl font-bold text-white text-center">
+          Alerts Table
+        </h2>
+        <div className="overflow-auto m-2 text-sm">
+          <table className="min-w-full border-collapse shadow-sm overflow-hidden rounded-2xl">
+            <thead>
+              <tr className="text-white font-semibold bg-gray-500">
+                <th className="font-bold border-r-2 border-gray-700 py-2">
+                  Severity Level
+                </th>
+                <th className="font-bold border-x-2 border-gray-700 py-2">
+                  Timestamp
+                </th>
+                <th className="font-bold border-x-2 border-gray-700 py-2">
+                  Message
+                </th>
+                <th className="font-bold border-x-2 border-gray-700 py-2">
+                  Effected PIDs
+                </th>
+                <th className="font-bold border-x-2 border-gray-700 py-2 px-2">
+                  Acknowledge
+                </th>
+                <th className="font-bold border-gray-700 py-2">Remove Alert</th>
+              </tr>
+            </thead>
+            <tbody>
+              {alerts.map((alert) => (
+                <tr key={alert.id} className=" text-gray-400">
+                  <td
+                    className="border-t-2 border-gray-700 px-6 py-2 text-center text-baseline font-bold"
+                    title={severityDescriptions[alert.severity_level]}
+                  >
+                    {alert.severity_level} -{" "}
+                    {severityLabels[alert.severity_level]}
+                  </td>
+                  <td className="border-x-2 border-gray-700 px-6 py-2 border-t-2">
+                    {alert.timestamp}
+                  </td>
+                  <td className="border-x-2 border-gray-700 px-6 py-2 border-t-2">
+                    {alert.message}
+                  </td>
+                  <td className="border-x-2 border-gray-700 px-6 py-2 border-t-2">
+                    {JSON.parse(alert.effected_pids).map((pidInfo) => (
+                      <div key={pidInfo.pid}>
+                        {pidInfo.pid} - {pidInfo.name}
+                      </div>
+                    ))}
+                  </td>
+                  <td className="border-x-2 border-gray-700 py-2 px-2 text-center border-t-2">
+                    <button
+                      onClick={() => handleAcknowledge(alert.id)}
+                      className="p-2 rounded-full focus:outline-none focus:ring focus:ring-blue-300"
+                    >
+                      <img
+                        src={
+                          alert.acknowledged === 1
+                            ? checkCircleIcon
+                            : exclamationCircleIcon
+                        }
+                        alt={
+                          alert.acknowledged === 1
+                            ? "Acknowledged"
+                            : "Unacknowledged"
+                        }
+                        className={
+                          alert.acknowledged === 1
+                            ? "p-2 bg-green-500 rounded-full hover:bg-green-600 focus:outline-none focus:ring focus:ring-green-300"
+                            : "p-2 bg-red-500 rounded-full hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300"
+                        }
+                      />
+                    </button>
+                  </td>
+                  <td className="border-t-2 border-gray-700 py-2 px-2 text-center font-semibold">
+                    <button
+                      onClick={() => handleRemove(alert.id)}
+                      className="p-2 bg-red-500 rounded-full hover:bg-red-600 focus:outline-none focus:ring focus:ring-red-300"
+                    >
+                      <img src={trashIcon} alt="Trash" className="w-6 h-6" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

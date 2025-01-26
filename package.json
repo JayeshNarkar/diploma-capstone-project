@@ -18,11 +18,11 @@
     "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
     "start:backend": "cd backend && node index.js",
     "start:frontend": "cd frontend && npm run dev -- --host",
-    "install": "concurrently \"npm run install:backend\" \"npm run install:frontend\"",
+    "install": "npm i concurrently --save-dev &&  \"npm run install:backend\" \"npm run install:frontend\"",
     "install:backend": "cd backend && npm install",
     "install:frontend": "cd frontend && npm install"
   },
-  "dependencies": {
+  "devDependencies": {
     "concurrently": "^9.1.2"
   }
 }

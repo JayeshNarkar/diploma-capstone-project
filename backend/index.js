@@ -123,7 +123,14 @@ app.get("/ps", async (req, res) => {
   }
 });
 
-const storeAlert = (alert) => {
+const storeAlert = async (alert) => {
+  const effectedProcesses = await Promise.all(
+    alert.effected_pids.map(async (pid) => {
+      const processInfo = await processMetricFetcher(pid);
+      return processInfo || { pid, error: "Process not found" };
+    })
+  );
+
   const stmt = alertsDb.prepare(`
     INSERT INTO alerts (severity_level, message, effected_pids)
     VALUES (?, ?, ?)
@@ -132,7 +139,7 @@ const storeAlert = (alert) => {
   stmt.run(
     alert.severity_level,
     alert.message,
-    JSON.stringify(alert.effected_pids)
+    JSON.stringify(effectedProcesses)
   );
 };
 
@@ -173,6 +180,47 @@ app.get("/alerts/:id", (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch alert" });
+  }
+});
+
+app.post("/alerts/:id/acknowledge", (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  try {
+    alertsDb
+      .prepare(
+        "UPDATE alerts SET acknowledged = CASE WHEN acknowledged = 0 THEN 1 ELSE 0 END WHERE id = ?"
+      )
+      .run(id);
+
+    const updatedAlert = alertsDb
+      .prepare("SELECT * FROM alerts WHERE id = ?")
+      .get(id);
+
+    if (updatedAlert) {
+      res.json(updatedAlert);
+    } else {
+      res.status(404).json({ error: "Alert not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to update alert" });
+  }
+});
+
+app.post("/alerts/:id/remove", (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  try {
+    const stmt = alertsDb.prepare("DELETE FROM alerts WHERE id = ?");
+    const result = stmt.run(id);
+
+    if (result.changes > 0) {
+      res.json({ message: "Alert removed successfully" });
+    } else {
+      res.status(404).json({ error: "Alert not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to remove alert" });
   }
 });
 
