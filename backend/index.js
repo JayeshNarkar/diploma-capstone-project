@@ -327,6 +327,11 @@ app.get("/verify-session", (req, res) => {
   }
 });
 
+app.post("/logout", (req, res) => {
+  res.clearCookie("session", { httpOnly: true, secure: true });
+  res.status(200).send("Logged out successfully");
+});
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

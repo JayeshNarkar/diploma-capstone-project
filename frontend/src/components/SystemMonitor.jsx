@@ -16,6 +16,7 @@ import { useNavigate } from "react-router";
 import checkCircleIcon from "../assets/check-circle.svg";
 import exclamationCircleIcon from "../assets/exclamation-circle.svg";
 import trashIcon from "../assets/trash.svg";
+import LogoutButton from "./LogoutButton";
 
 ChartJS.register(
   LineElement,
@@ -273,24 +274,6 @@ export default function SystemMonitor() {
     </div>
   );
 
-  const renderNetworkUsage = () => (
-    <>
-      <h2 className="text-xl font-semibold text-center text-white mb-2">
-        Network Usage
-      </h2>
-      <div className="w-full flex items-center justify-center bg-gradient-to-r from-blue-600 to-green-400 rounded-2xl mb-2 flex-grow shadow-sm">
-        <div className="m-2 text-green-800">
-          {formatNet(metrics.bandwidthDownKb)}/s
-        </div>
-      </div>
-      <div className="w-full flex items-center justify-center bg-gradient-to-r from-yellow-400 to-red-400 rounded-2xl flex-grow shadow-sm">
-        <div className="m-2 text-yellow-800">
-          {formatNet(metrics.bandwidthUpKb)}/s
-        </div>
-      </div>
-    </>
-  );
-
   const memoryData = {
     labels: ["Used Memory", "Free Memory"],
     datasets: [
@@ -427,8 +410,23 @@ export default function SystemMonitor() {
   return (
     <div className="p-5 font-sans bg-gray-900 max-h-screen grid grid-cols-4 grid-rows-4 gap-4">
       <div className="col-span-3 row-span-2">{renderCpuUsage()}</div>
-      <div className="col-span-1 row-span-2 flex flex-col items-center justify-center rounded-2xl bg-gray-800 p-4 shadow-md">
-        {renderNetworkUsage()}
+      <div className="col-span-1 row-span-2 flex flex-col">
+        {/* <LogoutButton className="mb-4" /> */}
+        <div className="flex flex-col items-center justify-center rounded-2xl bg-gray-800 p-4 shadow-md flex-grow">
+          <h2 className="text-xl font-semibold text-center text-white mb-2">
+            Network Usage
+          </h2>
+          <div className="w-full flex items-center justify-center bg-gradient-to-r from-blue-600 to-green-400 rounded-2xl mb-2 flex-grow shadow-sm">
+            <div className="m-2 text-green-800">
+              {formatNet(metrics.bandwidthDownKb)}/s
+            </div>
+          </div>
+          <div className="w-full flex items-center justify-center bg-gradient-to-r from-yellow-400 to-red-400 rounded-2xl flex-grow shadow-sm">
+            <div className="m-2 text-yellow-800">
+              {formatNet(metrics.bandwidthUpKb)}/s
+            </div>
+          </div>
+        </div>
       </div>
       <div className="col-span-1 row-span-2 flex items-center justify-center">
         {renderMemoryUsage()}
