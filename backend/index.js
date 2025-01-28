@@ -6,8 +6,12 @@ import psList from "ps-list";
 import metricsDb from "./db/metricsDB.js";
 import alertsDb from "./db/alertDB.js";
 import alertSchema from "./schema.js";
+import cookieParser from "cookie-parser";
 
 import nodeDiskInfo from "node-disk-info";
+
+import fs from "fs";
+import crypto from "crypto";
 
 const cpu = osu.cpu;
 const netstat = osu.netstat;
@@ -15,8 +19,13 @@ const netstat = osu.netstat;
 const app = express();
 const port = 6969;
 
+const passwordFilePath = "./password.txt";
+const algorithm = "aes-256-ctr";
+const keyFilePath = "./key.json";
+
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
 
 const processMetricFetcher = async (pid) => {
   const processes = await psList();
@@ -221,6 +230,100 @@ app.post("/alerts/:id/remove", (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to remove alert" });
+  }
+});
+
+let secretKey;
+let iv;
+
+const loadOrGenerateKey = () => {
+  if (fs.existsSync(keyFilePath)) {
+    const keyData = JSON.parse(fs.readFileSync(keyFilePath, "utf8"));
+    secretKey = Buffer.from(keyData.secretKey, "hex");
+    iv = Buffer.from(keyData.iv, "hex");
+  } else {
+    secretKey = crypto.randomBytes(32);
+    iv = crypto.randomBytes(16);
+    const keyData = {
+      secretKey: secretKey.toString("hex"),
+      iv: iv.toString("hex"),
+    };
+    fs.writeFileSync(keyFilePath, JSON.stringify(keyData));
+  }
+};
+
+loadOrGenerateKey();
+
+const encrypt = (text) => {
+  const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
+  const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
+  return `${iv.toString("hex")}:${encrypted.toString("hex")}`;
+};
+
+const decrypt = (hash) => {
+  const [iv, encrypted] = hash.split(":");
+  const decipher = crypto.createDecipheriv(
+    "aes-256-ctr",
+    secretKey,
+    Buffer.from(iv, "hex")
+  );
+  const decrypted = Buffer.concat([
+    decipher.update(Buffer.from(encrypted, "hex")),
+    decipher.final(),
+  ]);
+  return decrypted.toString();
+};
+
+app.post("/set-password", (req, res) => {
+  const { password } = req.body;
+  if (!password) {
+    return res.status(400).send("Password is required");
+  }
+
+  if (fs.existsSync(passwordFilePath)) {
+    return res.status(400).send("Password is already set");
+  }
+
+  const encryptedPassword = encrypt(password);
+  fs.writeFileSync(passwordFilePath, encryptedPassword);
+  res.status(200).send("Password set successfully");
+});
+
+app.post("/verify-password", (req, res) => {
+  const { password } = req.body;
+  if (!password) {
+    return res.status(400).send("Password is required");
+  }
+
+  if (!fs.existsSync(passwordFilePath)) {
+    return res.status(400).send("No password set");
+  }
+
+  const storedPassword = fs.readFileSync(passwordFilePath, "utf8");
+  const decryptedPassword = decrypt(storedPassword);
+
+  if (password === decryptedPassword) {
+    res.cookie("session", "authenticated", { httpOnly: true, secure: true });
+    res.status(200).send("Password verified successfully");
+  } else {
+    res.status(400).send("Incorrect password");
+  }
+});
+
+app.get("/password-status", (req, res) => {
+  if (fs.existsSync(passwordFilePath)) {
+    res.status(200).send("Password is set");
+  } else {
+    res.status(200).send("No password set");
+  }
+});
+
+app.get("/verify-session", (req, res) => {
+  const sessionCookie = req.cookies.session;
+  if (sessionCookie === "authenticated") {
+    res.status(200).send("Session is valid");
+  } else {
+    res.status(401).send("Session is invalid");
   }
 });
 

@@ -12,6 +12,7 @@ import {
 } from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
 import axios from "axios";
+import { useNavigate } from "react-router";
 import checkCircleIcon from "../assets/check-circle.svg";
 import exclamationCircleIcon from "../assets/exclamation-circle.svg";
 import trashIcon from "../assets/trash.svg";
@@ -27,6 +28,28 @@ ChartJS.register(
 );
 
 export default function SystemMonitor() {
+  let navigate = useNavigate();
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const response = await fetch("/api/verify-session", {
+          method: "GET",
+          credentials: "include",
+        });
+        if (response.ok) {
+          console.log("You're allowed");
+        } else {
+          navigate("/login");
+        }
+      } catch (error) {
+        console.error("Error verifying session:", error);
+      }
+    };
+
+    checkSession();
+  }, [navigate]);
+
   const [metrics, setMetrics] = useState({
     cpuUsage: 0,
     ramTotal: 0,
@@ -441,7 +464,7 @@ export default function SystemMonitor() {
             </thead>
             <tbody>
               {alerts.map((alert) => (
-                <tr key={alert.id} className=" text-gray-400">
+                <tr key={alert.id} className=" text-gray-400 bg-gray-600">
                   <td
                     className="border-t-2 border-gray-700 px-6 py-2 text-center text-baseline font-bold"
                     title={severityDescriptions[alert.severity_level]}

@@ -15,12 +15,12 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
-    "start:backend": "cd backend && node index.js",
-    "start:frontend": "cd frontend && npm run dev -- --host",
-    "install": "npm i concurrently --save-dev &&  \"npm run install:backend\" \"npm run install:frontend\"",
-    "install:backend": "cd backend && npm install",
-    "install:frontend": "cd frontend && npm install"
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && node index.js",
+    "dev:frontend": "cd frontend && npm run dev -- --host",
+    "build": "npm i concurrently --save-dev && npm run build:backend && npm run build:frontend",
+    "build:backend": "cd backend && npm install",
+    "build:frontend": "cd frontend && npm install"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
