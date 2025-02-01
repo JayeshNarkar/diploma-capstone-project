@@ -17,36 +17,19 @@ This project is a system monitoring tool with plans to implement anomaly and thr
 ## Setup Instructions
 
 1. **Clone the repository**:
+
    ```
    https://github.com/JayeshNarkar/diploma-capstone-project.git
    cd capstone-project
    ```
 
-**Backend**:
-
-2. **Install dependencies**:
+2. **Install Dependencies**:
 
 ```
-cd backend
-npm i
+npm run build
 ```
 
-3.**Run the project**:
-
-```
-node index.js
-```
-
-**Frontend**:
-
-2. **Install dependencies**:
-
-```
-cd frontend
-npm i
-```
-
-3.**Run the project**:
+3. **Run the Project**:
 
 ```
 npm run dev

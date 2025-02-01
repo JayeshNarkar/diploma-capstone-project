@@ -16,6 +16,7 @@ import { useNavigate } from "react-router";
 import checkCircleIcon from "../assets/check-circle.svg";
 import exclamationCircleIcon from "../assets/exclamation-circle.svg";
 import trashIcon from "../assets/trash.svg";
+import listColumns from "../assets/list-columns.svg";
 import LogoutButton from "./LogoutButton";
 
 ChartJS.register(
@@ -408,10 +409,30 @@ export default function SystemMonitor() {
   };
 
   return (
-    <div className="p-5 font-sans bg-gray-900 max-h-screen grid grid-cols-4 grid-rows-4 gap-4">
-      <div className="col-span-3 row-span-2">{renderCpuUsage()}</div>
-      <div className="col-span-1 row-span-2 flex flex-col">
-        {/* <LogoutButton className="mb-4" /> */}
+    <div className="p-4 font-sans bg-gray-900 max-h-screen grid grid-cols-4 grid-rows-11 gap-4">
+      <div className="flex justify-between content-between col-span-4 row-span-1">
+        <div className="px-4 py-2 text-white bg-gray-700 rounded-lg self-end shadow-md text-xl font-bold flex items-center">
+          <img
+            src={listColumns}
+            alt="Trash"
+            className="w-6 h-6 mr-2 outline-white"
+          />{" "}
+          Dashboard
+        </div>
+        <div className="flex items-center justify-center content-center">
+          <button
+            onClick={() => {
+              navigate("/");
+            }}
+            className="px-4 py-2 text-white bg-gray-500 rounded-lg hover:bg-gray-600 self-end font-bold shadow-md text-base mr-2"
+          >
+            /
+          </button>
+          <LogoutButton />
+        </div>
+      </div>
+      <div className="col-span-3 row-span-5">{renderCpuUsage()}</div>
+      <div className="col-span-1 row-span-5 flex flex-col">
         <div className="flex flex-col items-center justify-center rounded-2xl bg-gray-800 p-4 shadow-md flex-grow">
           <h2 className="text-xl font-semibold text-center text-white mb-2">
             Network Usage
@@ -428,13 +449,13 @@ export default function SystemMonitor() {
           </div>
         </div>
       </div>
-      <div className="col-span-1 row-span-2 flex items-center justify-center">
+      <div className="col-span-1 row-span-5 flex items-center justify-center">
         {renderMemoryUsage()}
       </div>
-      <div className="col-span-1 row-span-2 flex items-center justify-center rounded-2xl bg-gray-800 shadow-md">
+      <div className="col-span-1 row-span-5 flex items-center justify-center rounded-2xl bg-gray-800 shadow-md">
         {renderDiskUsage()}
       </div>
-      <div className="col-span-2 row-span-2 flex flex-col rounded-2xl bg-gray-800 shadow-md p-4">
+      <div className="col-span-2 row-span-5 flex flex-col rounded-2xl bg-gray-800 shadow-md p-4">
         <h2 className="text-xl font-bold text-white text-center">
           Alerts Table
         </h2>
