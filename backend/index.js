@@ -140,15 +140,18 @@ const storeAlert = async (alert) => {
     })
   );
 
+  const systemMetrics = await systemMetricsFetcher();
+
   const stmt = alertsDb.prepare(`
-    INSERT INTO alerts (severity_level, message, effected_pids)
-    VALUES (?, ?, ?)
+    INSERT INTO alerts (severity_level, message, effected_pids, system_metrics)
+    VALUES (?, ?, ?,?)
   `);
 
   stmt.run(
     alert.severity_level,
     alert.message,
-    JSON.stringify(effectedProcesses)
+    JSON.stringify(effectedProcesses),
+    JSON.stringify(systemMetrics)
   );
 };
 

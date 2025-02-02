@@ -32,26 +32,6 @@ ChartJS.register(
 export default function SystemMonitor() {
   let navigate = useNavigate();
 
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const response = await fetch("/api/verify-session", {
-          method: "GET",
-          credentials: "include",
-        });
-        if (response.ok) {
-          console.log("You're allowed");
-        } else {
-          navigate("/login");
-        }
-      } catch (error) {
-        console.error("Error verifying session:", error);
-      }
-    };
-
-    checkSession();
-  }, [navigate]);
-
   const [metrics, setMetrics] = useState({
     cpuUsage: 0,
     ramTotal: 0,
@@ -483,21 +463,42 @@ export default function SystemMonitor() {
             </thead>
             <tbody>
               {alerts.map((alert) => (
-                <tr key={alert.id} className=" text-gray-400 bg-gray-600">
+                <tr
+                  key={alert.id}
+                  className=" text-gray-400 bg-gray-600 hover:text-gray-500"
+                >
                   <td
-                    className="border-t-2 border-gray-700 px-6 py-2 text-center text-baseline font-bold"
+                    className="border-t-2 border-gray-700 px-6 py-2 text-center text-baseline font-bold hover:text-gray-400"
                     title={severityDescriptions[alert.severity_level]}
+                    onClick={() => {
+                      navigate("/alert/" + alert.id);
+                    }}
                   >
                     {alert.severity_level} -{" "}
                     {severityLabels[alert.severity_level]}
                   </td>
-                  <td className="border-x-2 border-gray-700 px-6 py-2 border-t-2">
+                  <td
+                    className="border-x-2 border-gray-700 px-6 py-2 border-t-2"
+                    onClick={() => {
+                      navigate("/alert/" + alert.id);
+                    }}
+                  >
                     {alert.timestamp}
                   </td>
-                  <td className="border-x-2 border-gray-700 px-6 py-2 border-t-2">
+                  <td
+                    className="border-x-2 border-gray-700 px-6 py-2 border-t-2"
+                    onClick={() => {
+                      navigate("/alert/" + alert.id);
+                    }}
+                  >
                     {alert.message}
                   </td>
-                  <td className="border-x-2 border-gray-700 px-6 py-2 border-t-2">
+                  <td
+                    className="border-x-2 border-gray-700 px-6 py-2 border-t-2"
+                    onClick={() => {
+                      navigate("/alert/" + alert.id);
+                    }}
+                  >
                     {JSON.parse(alert.effected_pids).map((pidInfo) => (
                       <div key={pidInfo.pid}>
                         {pidInfo.pid} - {pidInfo.name}

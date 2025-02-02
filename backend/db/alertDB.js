@@ -8,7 +8,8 @@ alertsDb.exec(`
     severity_level INTEGER,
     message TEXT,
     effected_pids TEXT,
-    acknowledged BOOLEAN DEFAULT 0
+    acknowledged BOOLEAN DEFAULT 0,
+    system_metrics TEXT
   )
 `);
 

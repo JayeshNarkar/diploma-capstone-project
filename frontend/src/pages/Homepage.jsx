@@ -12,12 +12,13 @@ const Homepage = () => {
   return (
     <div className="text-center bg-gradient-to-b from-slate-400 to-gray-600 w-screen h-screen font-sans">
       <div className="p-3 justify-between border-b-4 border-white flex mb-2">
-        <div className="flex items-center justify-start text-center text-xl text-gray-600 font-semibold w-full font-mono">
+        <div className="flex items-center justify-start text-center text-gray-900 font-semibold w-full font-mono text-2xl">
           <img
             src={Logo}
             className="w-12 h-12 mr-2 bg-white rounded-full p-1"
           />
-          System Monitor & Anomaly Detector
+          <p className="text-gray-600">System Monitor </p> &{" "}
+          <p className="text-gray-600">Anomaly Detector</p>
         </div>
         <button
           className="text-base border-2 bg-gray-800 hover:bg-gray-900 rounded-xl px-4  whitespace-nowrap text-white font-semibold"
