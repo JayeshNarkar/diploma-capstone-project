@@ -10,7 +10,7 @@ This project is a system monitoring tool with plans to implement anomaly and thr
 
 ## Technologies Used
 
-- **Backend**: Node.js, Express, Better-SQLite3, node-os-utils, ps-list
+- **Backend**: Node.js, Express, Better-SQLite3, node-os-utils, ps-list, nodemailer, crypto, openAI api
 - **Frontend**: React
 - **Database**: SQLite
 
