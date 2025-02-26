@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import exclamationTriangle from "../assets/exclamation-triangle.svg";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const severityColors = {
   1: "text-red-500 border-red-500",
-  2: "text-orange-500 border-orange-500",
-  3: "text-yellow-500 border-yellow-500",
-  4: "text-green-500 border-green-500",
-  5: "text-blue-500 border-blue-500",
+  2: "text-red-500 border-red-500",
+  3: "text-orange-500 border-orange-500",
+  4: "text-yellow-500 border-yellow-500",
+  5: "text-yellow-500 border-yellow-500",
 };
 
 const severityDescriptions = {
@@ -25,6 +27,7 @@ const Alert = () => {
   const [error, setError] = useState(null);
   const [metrics, setMetrics] = useState(null);
   const [effectedPids, setEffectedPids] = useState([]);
+  const [aiMessage, setAiMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -80,6 +83,25 @@ const Alert = () => {
       console.log(error);
     }
   }, [alert]);
+
+  useEffect(() => {
+    const fetchAiMessage = async () => {
+      try {
+        const response = await fetch(`/api/alerts/${id}/ai-message`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch AI message");
+        }
+        const data = await response.json();
+        setAiMessage(data.ai_message);
+      } catch (error) {
+        console.error("Error fetching AI message:", error);
+      }
+    };
+
+    if (alert) {
+      fetchAiMessage();
+    }
+  }, [alert, id]);
 
   if (loading) {
     return (
@@ -151,14 +173,10 @@ const Alert = () => {
             <p className="mb-2">
               <span className="font-semibold">Message:</span> {alert.message}
             </p>
-            {/* <p className="mb-2">
-              <span className="font-semibold">Acknowledged:</span>{" "}
-              {alert.acknowledged ? "Yes" : "No"}
-            </p> */}
 
             <div className="mb-4 overflow-auto">
               <span className="font-semibold">Effected Processes (id):</span>
-              <pre className="bg-gray-700 p-2 rounded text-sm text-gray-300 overflow-auto max-h-96">
+              <pre className="bg-gray-700 p-2 rounded text-sm text-gray-300 overflow-auto max-h-80">
                 {Array.isArray(effectedPids) ? (
                   effectedPids.map((process, index) => (
                     <div key={index} className="mb-2">
@@ -243,6 +261,20 @@ const Alert = () => {
                 </tbody>
               </table>
             )}
+            <div className="mt-4">
+              <h2 className="text-xl font-semibold mb-2 border-b border-gray-600 pb-2">
+                AI Message
+              </h2>
+              {aiMessage ? (
+                <div className="overflow-auto max-h-60 text-wrap bg-gray-700">
+                  <Markdown remarkPlugins={[remarkGfm]}>{aiMessage}</Markdown>
+                </div>
+              ) : (
+                <div className="text-center h-60 w-full items-center">
+                  <p>Loading...</p>
+                </div>
+              )}
+            </div>
           </div>
         </>
       ) : (

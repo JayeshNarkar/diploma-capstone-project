@@ -463,10 +463,7 @@ export default function SystemMonitor() {
             </thead>
             <tbody>
               {alerts.map((alert) => (
-                <tr
-                  key={alert.id}
-                  className=" text-gray-400 bg-gray-600 hover:text-gray-500"
-                >
+                <tr key={alert.id} className=" text-gray-400 bg-gray-600">
                   <td
                     className="border-t-2 border-gray-700 px-6 py-2 text-center text-baseline font-bold hover:text-gray-400"
                     title={severityDescriptions[alert.severity_level]}

@@ -47,14 +47,14 @@ def get_process_metrics(pid):
         print(f"Error fetching process data: {e}")
         return []  
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
 
     # ps_data = get_ps()
-    # print(ps_data)
     # print(ps_data[0])
+    # print(ps_data)
 
-    # system_metrics_data = get_system_metrics()
-    # print(system_metrics_data)
+     system_metrics_data = get_system_metrics()
+     print(system_metrics_data)
 
     # process_metrics_data = get_process_metrics(1)
     # print(process_metrics_data)

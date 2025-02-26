@@ -7,11 +7,14 @@ import metricsDb from "./db/metricsDB.js";
 import alertsDb from "./db/alertDB.js";
 import alertSchema from "./schema.js";
 import cookieParser from "cookie-parser";
-
+import OpenAI from "openai";
 import nodeDiskInfo from "node-disk-info";
-
 import fs from "fs";
 import crypto from "crypto";
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const cpu = osu.cpu;
 const netstat = osu.netstat;
@@ -26,6 +29,18 @@ const keyFilePath = "./key.json";
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 const processMetricFetcher = async (pid) => {
   const processes = await psList();
@@ -153,6 +168,23 @@ const storeAlert = async (alert) => {
     JSON.stringify(effectedProcesses),
     JSON.stringify(systemMetrics)
   );
+
+  if (alert.severity_level <= 3) {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: "jayesh.narkar18@gmail.com",
+      subject: `Alert: Severity Level ${alert.severity_level}`,
+      text: `An alert with severity level ${alert.severity_level} has been generated.\n\nMessage: ${alert.message}\n\nYou can view the alert details at: http://localhost:5173/dashboard`,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
+  }
 };
 
 app.post("/alerts", (req, res) => {
@@ -233,6 +265,42 @@ app.post("/alerts/:id/remove", (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to remove alert" });
+  }
+});
+
+const generateAIMessage = async (alert) => {
+  const effectedProcesses = JSON.stringify(alert.effected_pids);
+  const prompt = `Analyze the alert based on its message: ${alert.message} and list of affected PIDs: ${effectedProcesses}. Identify the application/program causing the anomaly and explain the issue concisely. And also give solutions to fix the problem. (send back response in a format that can be formatted using <Markdown remarkPlugins={[remarkGfm]}>)`;
+  console.log("ai msg generated");
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    store: true,
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  return completion.choices[0].message.content;
+};
+
+app.get("/alerts/:id/ai-message", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  try {
+    const alert = alertsDb.prepare("SELECT * FROM alerts WHERE id = ?").get(id);
+    if (!alert) {
+      return res.status(404).json({ error: "Alert not found" });
+    }
+    if (alert.ai_message) {
+      return res.json({ ai_message: alert.ai_message });
+    }
+
+    const aiMessage = await generateAIMessage(alert);
+    alertsDb
+      .prepare("UPDATE alerts SET ai_message = ? WHERE id = ?")
+      .run(aiMessage, id);
+
+    res.json({ ai_message: aiMessage });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch AI message" });
   }
 });
 

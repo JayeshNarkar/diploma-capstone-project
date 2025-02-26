@@ -9,7 +9,8 @@ alertsDb.exec(`
     message TEXT,
     effected_pids TEXT,
     acknowledged BOOLEAN DEFAULT 0,
-    system_metrics TEXT
+    system_metrics TEXT,
+    ai_message TEXT 
   )
 `);
 
