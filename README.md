@@ -44,6 +44,7 @@ EMAIL_PASS=
 4. **Run the Project**:
 
 ```
+cd ..
 npm run dev
 ```
 
