@@ -23,6 +23,7 @@ const app = express();
 const port = 6969;
 
 const passwordFilePath = "./password.txt";
+const emailFilePath = "./to_email.txt";
 const algorithm = "aes-256-ctr";
 const keyFilePath = "./key.json";
 
@@ -170,11 +171,12 @@ const storeAlert = async (alert) => {
   );
 
   if (alert.severity_level <= 3) {
+    const toEmail = fs.readFileSync(emailFilePath, "utf8");
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to: "jayesh.narkar18@gmail.com",
+      to: toEmail,
       subject: `Alert: Severity Level ${alert.severity_level}`,
-      text: `An alert with severity level ${alert.severity_level} has been generated.\n\nMessage: ${alert.message}\n\nYou can view the alert details at: http://localhost:5173/dashboard`,
+      text: `An alert with severity level ${alert.severity_level} has been generated.\n\nMessage: ${alert.message}\n\nYou can view the alert details at: http://localhost:5173/alert/${alert.id}\n\nVisit the dashboard: http://localhost:5173/dashboard`,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
@@ -378,6 +380,28 @@ app.post("/verify-password", (req, res) => {
     res.status(200).send("Password verified successfully");
   } else {
     res.status(400).send("Incorrect password");
+  }
+});
+
+app.post("/set-email", (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).send("Email is required");
+  }
+
+  if (fs.existsSync(emailFilePath)) {
+    return res.status(400).send("Email is already set");
+  }
+
+  fs.writeFileSync(emailFilePath, email);
+  res.status(200).send("Email set successfully");
+});
+
+app.get("/email-status", (req, res) => {
+  if (fs.existsSync(emailFilePath)) {
+    res.status(200).send("Email is set");
+  } else {
+    res.status(200).send("No email set");
   }
 });
 

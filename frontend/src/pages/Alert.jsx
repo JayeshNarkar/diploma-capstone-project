@@ -105,7 +105,7 @@ const Alert = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white text-xl font-semibold">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-white text-xl font-semibold">
         Loading...
       </div>
     );
@@ -113,21 +113,18 @@ const Alert = () => {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-900 text-red-500 text-xl font-semibold">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-red-500 text-xl font-semibold">
         Error: {error} (Alert ID: {id})
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen min-w-screen p-4 bg-gray-900 text-white justify-center grid grid-cols-2 grid-rows-11 gap-2 ">
+    <div className="min-h-screen min-w-screen p-4 bg-gradient-to-br from-gray-900 to-gray-800 text-white justify-center grid grid-cols-2 grid-rows-11 gap-4">
+      {/* Header */}
       <div className="flex justify-between content-between col-span-4 row-span-1">
-        <div className="px-4 py-2 text-white bg-gray-700 rounded-lg self-end shadow-md text-xl font-bold flex items-center">
-          <img
-            src={exclamationTriangle}
-            alt="Trash"
-            className="w-6 h-6 mr-2 outline-white"
-          />{" "}
+        <div className="px-4 py-2 text-white bg-gray-800 rounded-lg self-end shadow-lg text-xl font-bold flex items-center border-2 border-gray-700 hover:border-blue-500 transition-all duration-300">
+          <img src={exclamationTriangle} alt="Alert" className="w-6 h-6 mr-2" />{" "}
           Alert - {id}
         </div>
         <div className="flex items-center justify-center content-center">
@@ -135,7 +132,7 @@ const Alert = () => {
             onClick={() => {
               navigate("/dashboard");
             }}
-            className="px-4 py-2 text-white bg-gray-500 rounded-lg hover:bg-gray-600 self-end font-bold shadow-md text-base mr-2"
+            className="px-4 py-2 text-white bg-gray-700 rounded-lg hover:bg-gray-600 self-end font-bold shadow-lg text-base mr-2 border-2 border-gray-600 hover:border-blue-500 transition-all duration-300"
           >
             /dashboard
           </button>
@@ -143,15 +140,17 @@ const Alert = () => {
             onClick={() => {
               navigate("/");
             }}
-            className="px-4 py-2 text-white bg-gray-500 rounded-lg hover:bg-gray-600 self-end font-bold shadow-md text-base mr-2"
+            className="px-4 py-2 text-white bg-gray-700 rounded-lg hover:bg-gray-600 self-end font-bold shadow-lg text-base mr-2 border-2 border-gray-600 hover:border-blue-500 transition-all duration-300"
           >
             /
           </button>
         </div>
       </div>
+
+      {/* Alert Details */}
       {alert ? (
         <>
-          <div className="w-full bg-gray-800 p-6 rounded-xl shadow-lg col-span-1 row-span-10">
+          <div className="w-full bg-gray-850 p-6 rounded-xl shadow-lg col-span-1 row-span-10 border-2 border-gray-700 hover:border-blue-500 transition-all duration-300">
             <h1 className="text-3xl font-bold border-b border-gray-600 pb-4 mb-4">
               Alert Details
             </h1>
@@ -176,7 +175,7 @@ const Alert = () => {
 
             <div className="mb-4 overflow-auto">
               <span className="font-semibold">Effected Processes (id):</span>
-              <pre className="bg-gray-700 p-2 rounded text-sm text-gray-300 overflow-auto max-h-80">
+              <pre className="bg-gray-800 p-4 rounded-lg text-sm text-gray-300 overflow-auto max-h-80">
                 {Array.isArray(effectedPids) ? (
                   effectedPids.map((process, index) => (
                     <div key={index} className="mb-2">
@@ -211,7 +210,9 @@ const Alert = () => {
               </pre>
             </div>
           </div>
-          <div className="w-full bg-gray-800 p-6 rounded-xl shadow-lg col-span-1 row-span-10">
+
+          {/* System Metrics and AI Message */}
+          <div className="w-full bg-gray-850 p-6 rounded-xl shadow-lg col-span-1 row-span-10 border-2 border-gray-700 hover:border-blue-500 transition-all duration-300">
             <div className="mt-4">
               <h2 className="text-xl font-semibold mb-2 border-b border-gray-600 pb-2">
                 System Metrics
@@ -220,41 +221,41 @@ const Alert = () => {
             {metrics && (
               <table className="w-full text-left border-collapse border border-gray-700">
                 <thead>
-                  <tr className="bg-gray-700">
-                    <th className="border border-gray-600 px-3 py-2">Metric</th>
-                    <th className="border border-gray-600 px-3 py-2">Value</th>
+                  <tr className="bg-gray-800">
+                    <th className="border border-gray-700 px-4 py-2">Metric</th>
+                    <th className="border border-gray-700 px-4 py-2">Value</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="border border-gray-600 px-3 py-2">
+                    <td className="border border-gray-700 px-4 py-2">
                       CPU Usage
                     </td>
-                    <td className="border border-gray-600 px-3 py-2">
+                    <td className="border border-gray-700 px-4 py-2">
                       {metrics.cpuUsage}%
                     </td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-600 px-3 py-2">
+                    <td className="border border-gray-700 px-4 py-2">
                       RAM Used
                     </td>
-                    <td className="border border-gray-600 px-3 py-2">
+                    <td className="border border-gray-700 px-4 py-2">
                       {metrics.ramUsedPercentage}%
                     </td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-600 px-3 py-2">
+                    <td className="border border-gray-700 px-4 py-2">
                       Bandwidth Down
                     </td>
-                    <td className="border border-gray-600 px-3 py-2">
+                    <td className="border border-gray-700 px-4 py-2">
                       {formatNet(metrics.bandwidthDownKb)}
                     </td>
                   </tr>
                   <tr>
-                    <td className="border border-gray-600 px-3 py-2">
+                    <td className="border border-gray-700 px-4 py-2">
                       Bandwidth Up
                     </td>
-                    <td className="border border-gray-600 px-3 py-2">
+                    <td className="border border-gray-700 px-4 py-2">
                       {formatNet(metrics.bandwidthUpKb)}
                     </td>
                   </tr>
@@ -266,7 +267,7 @@ const Alert = () => {
                 AI Message
               </h2>
               {aiMessage ? (
-                <div className="overflow-auto max-h-60 text-wrap bg-gray-700">
+                <div className="overflow-auto max-h-60 text-wrap bg-gray-800 p-4 rounded-lg">
                   <Markdown remarkPlugins={[remarkGfm]}>{aiMessage}</Markdown>
                 </div>
               ) : (

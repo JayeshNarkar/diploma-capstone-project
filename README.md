@@ -29,7 +29,19 @@ This project is a system monitoring tool with plans to implement anomaly and thr
 npm run build
 ```
 
-3. **Run the Project**:
+3. **Create env**:
+
+```
+cd backend && touch .env
+```
+
+```
+OPENAI_API_KEY=
+EMAIL_USER=
+EMAIL_PASS=
+```
+
+4. **Run the Project**:
 
 ```
 npm run dev

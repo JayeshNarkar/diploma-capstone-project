@@ -25,3 +25,4 @@ alerts.db
 *.njsproj
 *.sln
 *.sw?
+to_email.txt
