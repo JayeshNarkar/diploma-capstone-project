@@ -14,7 +14,7 @@ const Homepage = () => {
         <div className="flex items-center justify-start text-center text-white font-semibold w-full font-mono text-2xl">
           <img
             src={"/logo.png"}
-            className="w-14 h-14 mr-2 bg-white rounded-full p-1"
+            className="w-14 h-14 mr-2 bg-white rounded-full p-1 border-gray-700 border-2"
           />
           CloudGuard
         </div>
@@ -27,7 +27,7 @@ const Homepage = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-8">
-        <div className="col-span-full py-6">
+        <div className="col-span-full">
           <h1 className="font-bold text-4xl text-white mb-4">
             Protecting Your Cloud, Detecting the Unseen
           </h1>
@@ -111,7 +111,7 @@ const Homepage = () => {
         </div>
       </div>
 
-      <div className="p-4 border-t-2 border-gray-700 mt-8">
+      <div className="p-4 border-t-2 border-gray-700">
         <p className="text-gray-400">
           © 2025 System Monitor & Anomaly Detector. All rights reserved.
         </p>

@@ -433,7 +433,7 @@ export default function Dashboard() {
       <div className="col-span-1 row-span-5 flex items-center justify-center">
         {renderMemoryUsage()}
       </div>
-      <div className="col-span-1 row-span-5 flex items-center justify-center rounded-2xl bg-gray-900 shadow-lg border border-gray-700 hover:border-blue-500 transition-all duration-300">
+      <div className="col-span-1 row-span-5 flex items-center justify-center rounded-2xl bg-gray-900 shadow-lg border-gray-700 hover:border-blue-500 transition-all duration-300">
         {renderDiskUsage()}
       </div>
       <div className="col-span-2 row-span-5 flex flex-col rounded-2xl bg-gray-900 shadow-lg p-4 border border-gray-700 hover:border-blue-500 transition-all duration-300">
@@ -481,7 +481,7 @@ export default function Dashboard() {
                     {severityLabels[alert.severity_level]}
                   </td>
                   <td
-                    className="border-x-2 border-gray-700 px-6 py-4 text-left hover:text-blue-400 cursor-pointer"
+                    className="border-x-2 border-t-2 border-gray-700 px-6 py-4 text-left hover:text-blue-400 cursor-pointer"
                     onClick={() => {
                       navigate("/alert/" + alert.id);
                     }}
@@ -489,7 +489,7 @@ export default function Dashboard() {
                     {alert.timestamp}
                   </td>
                   <td
-                    className="border-x-2 border-gray-700 px-6 py-4 text-left hover:text-blue-400 cursor-pointer"
+                    className="border-x-2 border-t-2 border-gray-700 px-6 py-4 text-left hover:text-blue-400 cursor-pointer"
                     onClick={() => {
                       navigate("/alert/" + alert.id);
                     }}
@@ -497,7 +497,7 @@ export default function Dashboard() {
                     {alert.message}
                   </td>
                   <td
-                    className="border-x-2 border-gray-700 px-6 py-4 text-left hover:text-blue-400 cursor-pointer"
+                    className="border-x-2 border-t-2 border-gray-700 px-6 py-4 text-left hover:text-blue-400 cursor-pointer"
                     onClick={() => {
                       navigate("/alert/" + alert.id);
                     }}
@@ -508,7 +508,7 @@ export default function Dashboard() {
                       </div>
                     ))}
                   </td>
-                  <td className="border-x-2 border-gray-700 py-4 px-6 text-center">
+                  <td className="border-x-2 border-t-2 border-gray-700 py-4 px-6 text-center">
                     <button
                       onClick={() => handleAcknowledge(alert.id)}
                       className="p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-200"

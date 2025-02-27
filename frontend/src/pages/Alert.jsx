@@ -175,7 +175,7 @@ const Alert = () => {
 
             <div className="mb-4 overflow-auto">
               <span className="font-semibold">Effected Processes (id):</span>
-              <pre className="bg-gray-800 p-4 rounded-lg text-sm text-gray-300 overflow-auto max-h-80">
+              <pre className="bg-gray-800 p-4 rounded-lg text-sm text-gray-300 overflow-auto max-h-96">
                 {Array.isArray(effectedPids) ? (
                   effectedPids.map((process, index) => (
                     <div key={index} className="mb-2">
