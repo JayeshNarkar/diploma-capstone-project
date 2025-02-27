@@ -32,7 +32,7 @@ npm run build
 3. **Create env**:
 
 ```
-cd backend && touch .env
+cd backend && vim .env
 ```
 
 ```
