@@ -136,18 +136,8 @@ const Alert = () => {
           >
             /dashboard
           </button>
-          <button
-            onClick={() => {
-              navigate("/");
-            }}
-            className="px-4 py-2 text-white bg-gray-700 rounded-lg hover:bg-gray-600 self-end font-bold shadow-lg text-base mr-2 border-2 border-gray-600 hover:border-blue-500 transition-all duration-300"
-          >
-            /
-          </button>
         </div>
       </div>
-
-      {/* Alert Details */}
       {alert ? (
         <>
           <div className="w-full bg-gray-850 p-6 rounded-xl shadow-lg col-span-1 row-span-10 border-2 border-gray-700 hover:border-blue-500 transition-all duration-300">
@@ -210,8 +200,6 @@ const Alert = () => {
               </pre>
             </div>
           </div>
-
-          {/* System Metrics and AI Message */}
           <div className="w-full bg-gray-850 p-6 rounded-xl shadow-lg col-span-1 row-span-10 border-2 border-gray-700 hover:border-blue-500 transition-all duration-300">
             <div className="mt-4">
               <h2 className="text-xl font-semibold mb-2 border-b border-gray-600 pb-2">

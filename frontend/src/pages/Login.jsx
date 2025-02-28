@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import AnimateTextUnderline from "../components/AnimateTextUnderline";
 
 const Login = () => {
   const [password, setPassword] = useState("");
@@ -105,7 +106,7 @@ const Login = () => {
           </h2>
           <p className="text-gray-300 mt-2">
             {isFirstVisit
-              ? "Set up your account to get started."
+              ? "Enter the email that you want alerts to be sent to!"
               : "Sign in to continue."}
           </p>
         </div>
@@ -154,9 +155,17 @@ const Login = () => {
           </button>
         </form>
         <div className="text-center text-sm text-gray-300">
-          {isFirstVisit && (
-            <p>By setting a password, you agree to our terms and conditions.</p>
-          )}
+          <p>
+            Go back to{" "}
+            <button
+              className=" text-gray-400"
+              onClick={() => {
+                navigate("/");
+              }}
+            >
+              <AnimateTextUnderline text={"Homepage"} />
+            </button>
+          </p>
         </div>
       </div>
     </div>

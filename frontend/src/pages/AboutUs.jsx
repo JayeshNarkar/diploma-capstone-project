@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router";
-import { Github, Home, LayoutDashboard, Users, Boxes } from "lucide-react";
+import { Boxes, Github, Home, LayoutDashboard, Users } from "lucide-react";
 import LogoutButton from "../components/LogoutButton";
 import AnimateTextUnderline from "../components/AnimateTextUnderline";
 
-const Homepage = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
+const AboutUs = () => {
+  const [isAuthenticated, setIsAuthenticated] = React.useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  React.useEffect(() => {
     const checkSession = async () => {
       try {
         const response = await fetch("/api/verify-session", {
@@ -28,15 +28,35 @@ const Homepage = () => {
     checkSession();
   }, [navigate]);
 
+  const teamMembers = [
+    {
+      name: "Jayesh Narkar",
+      role: "JS Developer",
+      image: "/jayesh.jpg",
+    },
+    {
+      name: "Somesh Tiwari",
+      role: "UI & UX Designer",
+      image: "/somesh.jpg",
+    },
+    {
+      name: "Shreya Pawar",
+      role: "Python Developer",
+      image: "/alice-johnson.jpg",
+    },
+    {
+      name: "Sweety Tiwari",
+      role: "System Designer",
+      image: "/bob-brown.jpg",
+    },
+  ];
+
   return (
-    <div className="text-center bg-gradient-to-b from-gray-900 to-gray-800 w-screen h-screen font-sans overflow-auto">
+    <div className="text-center bg-gradient-to-b from-gray-900 to-gray-800 min-h-screen font-sans overflow-auto">
       <div className="p-4 flex justify-between content-between items-center border-b-2 border-gray-700">
-        <div className="flex items-center justify-start text-center text-white font-semibold font-mono text-2xl">
-          <img
-            src={"/logo.png"}
-            className="w-14 h-14 mr-2 bg-white rounded-full p-1 border-sky-500 border-2"
-          />
-          CloudGuard
+        <div className="px-4 py-2 text-white bg-gray-800 rounded-lg self-center shadow-lg text-xl font-bold flex items-center border border-blue-500">
+          <Users className="w-6 h-6 mr-1" />
+          About Us
         </div>
         <div className="flex content-center justify-center">
           <button
@@ -103,46 +123,39 @@ const Homepage = () => {
         )}
       </div>
 
-      <div className="flex flex-col items-center justify-center h-[calc(100vh-10rem)]">
-        <h1 className="font-bold text-4xl text-white mb-4">
-          Protecting Your Cloud, Detecting the Unseen
-        </h1>
-
-        <div className="flex justify-center items-center my-6">
-          <img
-            src="/ex1.png"
-            alt="Example 1"
-            style={{ transform: "rotate(-5deg)", marginRight: "20px" }}
-            className=" h-72 object-cover rounded-lg shadow-lg"
-          />
-          <img
-            src="/ex2.png"
-            alt="Example 2"
-            style={{ transform: "rotate(5deg)" }}
-            className=" h-72 object-cover rounded-lg shadow-lg"
-          />
-        </div>
-
-        <p className="text-xl font-semibold text-gray-300 my-6">
-          Our system monitoring tool with anomaly and threat detection features
-          is lightweight, uses SQLite database, and offers a responsive and
-          user-friendly UI.
+      <div className="py-4 flex-1">
+        <h1 className="font-bold text-4xl text-white">About Us</h1>
+        <p className="text-xl font-semibold text-gray-300 mb-4">
+          We are a passionate team of developers and engineers dedicated to
+          building innovative solutions for system monitoring and anomaly
+          detection.
         </p>
-        <button
-          className="text-base border-2 border-blue-500 bg-gray-800 hover:bg-gray-700 rounded-xl py-2 px-6 whitespace-nowrap text-white font-semibold hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300"
-          onClick={() => {
-            navigate("/login");
-          }}
-        >
-          Get Started!
-        </button>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 max-w-4xl mx-auto ">
+          {teamMembers.map((member, index) => (
+            <div
+              key={index}
+              className="bg-gray-850 p-4 rounded-xl shadow-lg border-2 border-gray-700 hover:border-blue-500 transition-all duration-300"
+            >
+              <img
+                src={member.image}
+                alt={member.name}
+                className=" w-36 h-36 rounded-md mx-auto mb-2 border-2 border-blue-500"
+              />
+              <h2 className="text-xl font-semibold text-white mb-1">
+                {member.name}
+              </h2>
+              <p className="text-gray-300 text-sm">{member.role}</p>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="p-4 border-t-2 border-gray-700">
+      <div className="pt-4 border-t-2 border-gray-700">
         <p className="text-gray-400">© 2025 CloudGuard. All rights reserved.</p>
       </div>
     </div>
   );
 };
 
-export default Homepage;
+export default AboutUs;

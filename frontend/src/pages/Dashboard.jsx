@@ -16,8 +16,8 @@ import { useNavigate } from "react-router";
 import checkCircleIcon from "../assets/check-circle.svg";
 import exclamationCircleIcon from "../assets/exclamation-circle.svg";
 import trashIcon from "../assets/trash.svg";
-import listColumns from "../assets/list-columns.svg";
 import LogoutButton from "../components/LogoutButton";
+import { Boxes, Github, Home, LayoutDashboard, Users } from "lucide-react";
 
 ChartJS.register(
   LineElement,
@@ -249,7 +249,7 @@ export default function Dashboard() {
         <Pie data={memoryData} options={memoryOptions} />
       </div>
       <p className="text-center mt-2 text-white">
-        <strong>Used:</strong> {formatMemory(metrics.ramUsed)} /{" "}
+        <strong>Used:</strong> {formatMemory(metrics.ramUsed)} /
         <strong>Total:</strong> {formatMemory(metrics.ramTotal)}
       </p>
     </div>
@@ -328,7 +328,7 @@ export default function Dashboard() {
         <Pie data={diskData} options={diskOptions} />
       </div>
       <p className="text-center mt-2 text-white">
-        <strong>Used:</strong> {formatDisk(diskMetrics.diskUsed)} /{" "}
+        <strong>Used:</strong> {formatDisk(diskMetrics.diskUsed)} /
         <strong>Total:</strong> {formatDisk(diskMetrics.diskTotal)}
       </p>
     </div>
@@ -392,23 +392,88 @@ export default function Dashboard() {
   return (
     <div className="p-4 font-sans bg-gray-900 max-h-screen grid grid-cols-4 grid-rows-11 gap-4">
       <div className="flex justify-between content-between col-span-4 row-span-1">
-        <div className="px-4 py-2 text-white bg-gray-800 rounded-lg self-end shadow-lg text-xl font-bold flex items-center border border-blue-500">
-          <img
-            src={listColumns}
-            alt="Trash"
-            className="w-6 h-6 mr-2 outline-white"
-          />{" "}
+        <div className="px-4 py-2 text-white bg-gray-800 rounded-lg self-center shadow-lg text-xl font-bold flex items-center border border-blue-500">
+          <LayoutDashboard className="w-6 h-6 mr-1" />
           Dashboard
         </div>
-        <div className="flex items-center justify-center content-center">
+        <div className="flex content-center justify-center">
           <button
+            className="flex items-center mr-2 text-xl text-gray-300 px-4 py-2 whitespace-nowrap font-semibold transition-all duration-300"
             onClick={() => {
               navigate("/");
             }}
-            className="px-4 py-2 text-white bg-gray-700 rounded-lg hover:bg-gray-600 self-end font-bold shadow-lg text-base mr-2 border border-gray-600 hover:border-blue-500 transition-all duration-300"
           >
-            /
+            <Home className="w-5 h-5 mr-1" />
+            <span
+              className="relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-[2px] 
+                   before:bg-gray-300 before:scale-x-0 before:origin-left before:transition-transform before:duration-300 
+                   hover:before:scale-x-100"
+            >
+              Home
+            </span>
           </button>
+          <button
+            className="flex items-center mr-2 text-xl text-gray-300 px-4 py-2 whitespace-nowrap font-semibold transition-all duration-300"
+            onClick={() => {
+              navigate("/dashboard");
+            }}
+          >
+            <LayoutDashboard className="w-5 h-5 mr-1" />
+            <span
+              className="relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-[2px] 
+                   before:bg-gray-300 before:scale-x-0 before:origin-left before:transition-transform before:duration-300 
+                   hover:before:scale-x-100"
+            >
+              Dashboard
+            </span>
+          </button>
+          <button
+            className="flex items-center mr-2 text-xl text-gray-300 px-4 py-2 whitespace-nowrap font-semibold transition-all duration-300"
+            onClick={() => {
+              navigate("/features");
+            }}
+          >
+            <Boxes className="w-5 h-5 mr-1" />
+            <span
+              className="relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-[2px] 
+                   before:bg-gray-300 before:scale-x-0 before:origin-left before:transition-transform before:duration-300 
+                   hover:before:scale-x-100"
+            >
+              Features
+            </span>
+          </button>
+          <button
+            className="flex items-center mr-2 text-xl text-gray-300 px-4 py-2 whitespace-nowrap font-semibold transition-all duration-300"
+            onClick={() => {
+              navigate("/about-us");
+            }}
+          >
+            <Users className="w-5 h-5 mr-1" />
+            <span
+              className="relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-[2px] 
+                   before:bg-gray-300 before:scale-x-0 before:origin-left before:transition-transform before:duration-300 
+                   hover:before:scale-x-100"
+            >
+              About Us
+            </span>
+          </button>
+          <a
+            href="https://github.com/JayeshNarkar/diploma-capstone-project"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center text-xl text-gray-300 px-4 py-2 whitespace-nowrap font-semibold transition-all duration-300"
+          >
+            <Github className="w-5 h-5 mr-1" />
+            <span
+              className="relative before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full before:h-[2px] 
+                   before:bg-gray-300 before:scale-x-0 before:origin-left before:transition-transform before:duration-300 
+                   hover:before:scale-x-100"
+            >
+              GitHub
+            </span>
+          </a>
+        </div>
+        <div className="ml-40 flex ">
           <LogoutButton />
         </div>
       </div>
@@ -477,7 +542,7 @@ export default function Dashboard() {
                       navigate("/alert/" + alert.id);
                     }}
                   >
-                    {alert.severity_level} -{" "}
+                    {alert.severity_level} -
                     {severityLabels[alert.severity_level]}
                   </td>
                   <td
