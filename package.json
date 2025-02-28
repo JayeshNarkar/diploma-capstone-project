@@ -15,7 +15,7 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"python backend/python_logic/monitor.py  \"",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"python3 backend/python_logic/monitor.py  \"",
     "dev:backend": "cd backend && nodemon index.js",
     "dev:frontend": "cd frontend && npm run dev -- --host",
     "build": "npm i concurrently --save-dev && npm run build:backend && npm run build:frontend",
