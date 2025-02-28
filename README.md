@@ -16,11 +16,17 @@ This project is a system monitoring tool with plans to implement anomaly and thr
 
 ## Setup Instructions
 
+**Pre requisites** (installing node):
+
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+```
+
 1. **Clone the repository**:
 
    ```
-   https://github.com/JayeshNarkar/diploma-capstone-project.git
-   cd capstone-project
+   git clone https://github.com/JayeshNarkar/diploma-capstone-project.git
+   cd diploma-capstone-project
    ```
 
 2. **Install Dependencies**:
