@@ -42,12 +42,12 @@ const AboutUs = () => {
     {
       name: "Shreya Pawar",
       role: "Python Developer",
-      image: "/alice-johnson.jpg",
+      image: "/shreya.jpeg",
     },
     {
       name: "Sweety Tiwari",
       role: "System Designer",
-      image: "/bob-brown.jpg",
+      image: "/sweety.jpeg",
     },
   ];
 

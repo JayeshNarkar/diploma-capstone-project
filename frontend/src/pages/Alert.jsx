@@ -121,7 +121,6 @@ const Alert = () => {
 
   return (
     <div className="min-h-screen min-w-screen p-4 bg-gradient-to-br from-gray-900 to-gray-800 text-white justify-center grid grid-cols-2 grid-rows-11 gap-4">
-      {/* Header */}
       <div className="flex justify-between content-between col-span-4 row-span-1">
         <div className="px-4 py-2 text-white bg-gray-800 rounded-lg self-end shadow-lg text-xl font-bold flex items-center border-2 border-gray-700 hover:border-blue-500 transition-all duration-300">
           <img src={exclamationTriangle} alt="Alert" className="w-6 h-6 mr-2" />{" "}
